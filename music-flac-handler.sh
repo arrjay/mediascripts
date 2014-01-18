@@ -187,10 +187,24 @@ if [ $tagmiss -ne 0 ] ; then
   exit 1
 fi
 
+# handle leading A/The in artist, album
+# theory: strip article from title/artist and use for duplication checks
+# the need to add an article is handled by the find code, as it will substring match.
+# this should let us find things which are titled "The Beatles" and "Beatles"
+# and realize there is a conflict.
+function articulator {
+  # convert lowercase for comparisons
+  input=$(echo "${1}"|tr '[A-Z]' '[a-z]')
+  input=${input##"a "}
+  input=${input##"an "}
+  input=${input##"the "}
+  echo ${input}
+}
+
 # okay, now, check in the tree if we've seen this before
 if [ ${compilation} -ne 1 ] ; then
   # the easiest way to do a case insensitive check seems to be find of depth 1 with iname
-  artistct=$(find "${MUSIC_ROOT}" -type d -maxdepth 1 -iname "${fs_artist}"| wc -l)
+  artistct=$(find "${MUSIC_ROOT}" -type d -maxdepth 1 -iname "*$(articulator "${fs_artist}")*"| wc -l)
   if [ "${artistct}" -gt 0 ] ; then
     # see if we differ from a destdir by case (which means it doesn't exist)
     if [ ! -d "${MUSIC_ROOT}/${fs_artist}" ] ; then
@@ -208,7 +222,7 @@ fi
 dpath=
 # now, check for album directory
 if [ ${compilation} -ne 1 ] ; then
-  albumct=$(find "${MUSIC_ROOT}/${fs_artist}" -type d -maxdepth 1 -iname "${fs_album}"|wc -l)
+  albumct=$(find "${MUSIC_ROOT}/${fs_artist}" -type d -maxdepth 1 -iname "*$(articulator "${fs_album}")*"|wc -l)
   if [ "${albumct}" -gt 0 ] ; then
     if [ ! -d "${MUSIC_ROOT}/${fs_artist}/${fs_album}" ] ; then
       echo "case mismacth in album name tag: value ${fs_album}" >> ${output_log}
@@ -223,7 +237,7 @@ if [ ${compilation} -ne 1 ] ; then
     dpath="${MUSIC_ROOT}/${fs_artist}/${fs_album}"
   fi
 else
-  albumct=$(find "${MUSIC_ROOT}/${COMP_DIR}" -type d -maxdepth 1 -iname "${fs_album}"|wc -l)
+  albumct=$(find "${MUSIC_ROOT}/${COMP_DIR}" -type d -maxdepth 1 -iname "*$(articulator "${fs_album}")*"|wc -l)
   if [ "${albumct}" -gt 0 ] ; then
     if [ ! -d  "${MUSIC_ROOT}/${COMP_DIR}/${fs_album}" ] ; then
       echo "case mismacth in album name tag: value ${fs_album}" >> ${output_log}
