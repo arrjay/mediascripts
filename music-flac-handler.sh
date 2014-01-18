@@ -11,6 +11,13 @@ set -e
 output_log=$(mktemp ${MUSIC_STAGE}/XXXXXX)
 rdid=$(basename ${output_log})
 
+# check that the file decodes correctly first. we save that as a tag miss, though. eh.
+flac --test "${in}" 2>/dev/null
+if [ ${?} -ne 0 ]; then
+  echo "file does not decode properly" >> ${output_log}
+  tagmiss=$((${tagmiss} + 1))
+fi
+
 # the tags I am looking for here are modeled after EasyTag.
 # required tags
 declare -a reqtags=("TITLE" "ARTIST" "ALBUM" "TRACKNUMBER" "DISCNUMBER" "TRACKTOTAL" "DATE")
