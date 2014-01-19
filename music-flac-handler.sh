@@ -1,8 +1,8 @@
 #!/bin/bash
 
-conf=${1}
+home=${1}
 
-. "${conf}"
+. "${home}"/music.conf
 
 in=${2}
 
@@ -11,6 +11,9 @@ set -e
 output_log=$(mktemp ${MUSIC_STAGE}/XXXXXX)
 rdid=$(basename ${output_log})
 
+# counter for missing tags - if this is < 0, we will reject the file
+tagmiss=0
+
 # check that the file decodes correctly first. we save that as a tag miss, though. eh.
 flac --test "${in}" 2>/dev/null
 if [ ${?} -ne 0 ]; then
@@ -18,12 +21,12 @@ if [ ${?} -ne 0 ]; then
   tagmiss=$((${tagmiss} + 1))
 fi
 
+# strip replay gain information from file
+metaflac --remove-replay-gain "${in}"
+
 # the tags I am looking for here are modeled after EasyTag.
 # required tags
 declare -a reqtags=("TITLE" "ARTIST" "ALBUM" "TRACKNUMBER" "DISCNUMBER" "TRACKTOTAL" "DATE")
-
-# counter for missing tags - if this is < 0, we will reject the file
-tagmiss=0
 
 # grab comment tags, split on = *but* return single space-separated string
 tags=$(metaflac --list "${in}" | awk -F': ' 'BEGIN{ORS=" "} $1 ~ "comment\\[" {split($2,s,"=");print s[1];}')
@@ -275,6 +278,8 @@ if [ ${compilation} -ne 1 ] ; then
     exit 1
   else
     mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title}.flac"
+    chmod a+r "${dpath}/${fs_tracknumber} - ${fs_title}.flac"
+    rm "${output_log}"
   fi
 else
   if [ -f "${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac" ] ; then
@@ -284,5 +289,7 @@ else
     exit 1
   else
     mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac"
+    chmod a+r "${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac"
+    rm "${output_log}"
   fi
 fi
