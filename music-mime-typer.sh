@@ -2,14 +2,21 @@
 
 set -e
 
+home=${1}
+
+cd ${home}
+
+# source config pieces
+. ${home}/music.conf
+
 # figure out what MIME type a given file is (file -i), then process it with a file-specific script. expects a single file argument
-in=${1}
+in=${2}
 
 filetype=$(file -i "${in}"|awk -F': ' '{split($2,s,";");print s[1];}')
 case $filetype in
   audio/x-flac)
     # FLAC!
-    music-flac-handler.sh
+    ${home}/bin/music-flac-handler.sh "${home}" "${in}"
     ;;
   audio/mpeg)
     # this should be mp3
