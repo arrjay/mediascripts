@@ -194,6 +194,7 @@ fi
 if [ $tagmiss -ne 0 ] ; then
   mv "${in}" "${MUSIC_STAGE}/${wname}.${rdid}.flac"
   mv "${output_log}" "${MUSIC_STAGE}/${wname}.${rdid}.txt"
+  chmod a+r "${MUSIC_STAGE}/${wname}.${rdid}.txt"
   exit 1
 fi
 
@@ -221,6 +222,7 @@ if [ ${compilation} -ne 1 ] ; then
       echo "case mismatch in artist name tag: value ${fs_artist}" >> ${output_log}
       mv "${in}" "${MUSIC_STAGE}/${wname}.${rdid}.flac"
       mv "${output_log}" "${MUSIC_STAGE}/${wname}.${rdid}.txt"
+      chmod a+r "${MUSIC_STAGE}/${wname}.${rdid}.txt"
       exit 1
     fi
   else
@@ -240,6 +242,7 @@ if [ ${compilation} -ne 1 ] ; then
       echo "case mismacth in album name tag: value ${fs_album}" >> ${output_log}
       mv "${in}" "${MUSIC_STAGE}/${wname}.${rdid}.flac"
       mv "${output_log}" "${MUSIC_STAGE}/${wname}.${rdid}.txt"
+      chmod a+r "${MUSIC_STAGE}/${wname}.${rdid}.txt"
       exit 1
     else
       dpath="${MUSIC_ROOT}/${fs_artist}/${fs_album}"
@@ -279,6 +282,7 @@ if [ ${compilation} -ne 1 ] ; then
     echo "file already exists: ${dpath}/${fs_tracknumber} - ${fs_title}.flac" >> ${output_log}
     mv "${in}" "${MUSIC_STAGE}/${wname}.${rdid}.flac"
     mv "${output_log}" "${MUSIC_STAGE}/${wname}.${rdid}.txt"
+    chmod a+r "${MUSIC_STAGE}/${wname}.${rdid}.txt"
     exit 1
   else
     mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title}.flac"
@@ -291,6 +295,7 @@ else
     echo "file already exists: ${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac" >> ${output_log}
     mv "${in}" "${MUSIC_STAGE}/${wname}.${rdid}.flac"
     mv "${output_log}" "${MUSIC_STAGE}/${wname}.${rdid}.txt"
+    chmod a+r "${MUSIC_STAGE}/${wname}.${rdid}.txt"
     exit 1
   else
     mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac"
