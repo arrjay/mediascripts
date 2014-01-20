@@ -48,7 +48,10 @@ for file in ${files[@]}; do
     # set perms to something sane, call the next script as _music
     chown ${MUSIC_USER}:${MUSIC_GROUP} "${newfile}"
     chmod 0600 "${newfile}"
+    # the music script itself is free to return errors
+    set +e
     sudo -u ${MUSIC_USER} ${MUSIC_STAGE2_SCRIPT} "${1}" "${newfile}"
+    set -e
   fi
   # turn this back on, in case there was a lock
   set -e
