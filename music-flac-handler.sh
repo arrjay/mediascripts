@@ -70,10 +70,10 @@ esac
 # extract the picture and check format with file - support jpeg and png
 picturefile=$(mktemp /tmp/picture.XXXXXX)
 
-if [ -z "${pictureblock}" ]; then
-  metaflac --export-picture-to=${picturefile} "${in}"
-else
+if [ "${picturect}" -gt 1 ]; then
   metaflac --block-number=${pictureblock} --export-picture-to=${picturefile} "${in}"
+elif [ "${picturect}" -eq 1 ]; then
+  metaflac --export-picture-to=${picturefile} "${in}"
 fi
 
 picturetype=$(file -i ${picturefile} | awk -F': ' '{ split($2,s,";"); print s[1]; }')
