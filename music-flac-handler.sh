@@ -154,7 +154,7 @@ fs_title=$(fsmangle "${title}")
 # function to add leading zeroes of appropriate
 function lz {
   if [ ! -z "$tracktotal" ]; then
-    printf "%0${#tracktotal}d" "${1}"
+    printf "%0${#tracktotal}d" "${1##0}"
   else
     # ask paramter 2 what to do, here
     printf "%0${2}d" "${1}"
@@ -224,7 +224,9 @@ if [ ${compilation} -ne 1 ] ; then
       exit 1
     fi
   else
+    set +e
     mkdir "${MUSIC_ROOT}/${fs_artist}"
+    set -e
   fi
 fi
 
@@ -243,7 +245,9 @@ if [ ${compilation} -ne 1 ] ; then
       dpath="${MUSIC_ROOT}/${fs_artist}/${fs_album}"
     fi
   else
+    set +e
     mkdir "${MUSIC_ROOT}/${fs_artist}/${fs_album}"
+    set -e
     dpath="${MUSIC_ROOT}/${fs_artist}/${fs_album}"
   fi
 else
