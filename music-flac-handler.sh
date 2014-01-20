@@ -283,6 +283,7 @@ if [ ${compilation} -ne 1 ] ; then
   else
     mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title}.flac"
     chmod a+r "${dpath}/${fs_tracknumber} - ${fs_title}.flac"
+    dfile="${dpath}/${fs_tracknumber} - ${fs_title}.flac"
     rm "${output_log}"
   fi
 else
@@ -294,6 +295,10 @@ else
   else
     mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac"
     chmod a+r "${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac"
+    dfile="${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac"
     rm "${output_log}"
   fi
 fi
+
+# create an mp3 of the flac input
+flac2mp3 "${dfile}"
