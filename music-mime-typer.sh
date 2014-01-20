@@ -18,6 +18,9 @@ case $filetype in
     # FLAC!
     ${home}/bin/music-flac-handler.sh "${home}" "${in}"
     ;;
+  audio/mp4)
+    ${home}/bin/music-m4a-handler.sh "${home}" "${in}"
+    ;;
   audio/mpeg)
     # this should be mp3
     ;;
