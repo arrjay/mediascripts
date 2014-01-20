@@ -164,7 +164,7 @@ function lz {
 # tracknumbers are generally two digit padded
 fs_tracknumber=$(lz "${tracknumber}" 2)
 # discs are generally one digit padded
-fs_cdisc=$(lz "${tracknumber}" 1)
+fs_cdisc=$(lz "${cdisc}" 1)
 
 # establish a working set name (in case of rejection)
 wname=
@@ -272,7 +272,9 @@ fi
 
 # if we are a multi-disc set, create and add the disc path now
 if [ ${multidisc} -eq 1 ] ; then
+  set +e
   mkdir "${dpath}/Disc ${fs_cdisc}"
+  set -e
   dpath="${dpath}/Disc ${fs_cdisc}"
 fi
 
