@@ -157,7 +157,7 @@ function lz {
     printf "%0${#tracktotal}d" "${1##0}"
   else
     # ask paramter 2 what to do, here
-    printf "%0${2}d" "${1}"
+    printf "%0${2}d" "${1##0}"
   fi
 }
 
