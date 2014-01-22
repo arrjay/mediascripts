@@ -26,7 +26,7 @@ metaflac --remove-replay-gain "${in}"
 
 # the tags I am looking for here are modeled after EasyTag.
 # required tags
-declare -a reqtags=("TITLE" "ARTIST" "ALBUM" "TRACKNUMBER" "DISCNUMBER" "TRACKTOTAL" "DATE")
+declare -a reqtags=("TITLE" "ARTIST" "ALBUM" "TRACKNUMBER" "DISCNUMBER" "TRACKTOTAL" "DATE" "GROUPING")
 
 # grab comment tags, split on = *but* return single space-separated string
 tags=$(metaflac --list "${in}" | awk -F': ' 'BEGIN{ORS=" "} $1 ~ "comment\\[" {split($2,s,"=");print s[1];}')
@@ -153,12 +153,8 @@ fs_title=$(fsmangle "${title}")
 
 # function to add leading zeroes of appropriate
 function lz {
-  if [ ! -z "$tracktotal" ]; then
-    printf "%0${#tracktotal}d" "${1##0}"
-  else
-    # ask paramter 2 what to do, here
-    printf "%0${2}d" "${1##0}"
-  fi
+  # ask paramter 2 what to do, here
+  printf "%0${2}d" "${1##0}"
 }
 
 # tracknumbers are generally two digit padded
