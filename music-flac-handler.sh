@@ -289,16 +289,16 @@ if [ ${compilation} -ne 1 ] ; then
     rm "${output_log}"
   fi
 else
-  if [ -f "${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac" ] ; then
-    echo "file already exists: ${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac" >> ${output_log}
+  if [ -f "${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac" ] ; then
+    echo "file already exists: ${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac" >> ${output_log}
     mv "${in}" "${MUSIC_STAGE}/${wname}.${rdid}.flac"
     mv "${output_log}" "${MUSIC_STAGE}/${wname}.${rdid}.txt"
     chmod a+r "${MUSIC_STAGE}/${wname}.${rdid}.txt"
     exit 1
   else
-    mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac"
-    chmod a+r "${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac"
-    dfile="${dpath}/${fs_tracknumber} - ${fs_title} \(${fs_artist}\).flac"
+    mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac"
+    chmod a+r "${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac"
+    dfile="${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac"
     rm "${output_log}"
   fi
 fi
