@@ -261,7 +261,9 @@ else
       dpath="${MUSIC_ROOT}/${COMP_DIR}/${fs_album}"
     fi
   else
+    set +e
     mkdir "${MUSIC_ROOT}/${COMP_DIR}/${fs_album}"
+    set -e
     dpath="${MUSIC_ROOT}/${COMP_DIR}/${fs_album}"
   fi
 fi
