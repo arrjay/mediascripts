@@ -233,7 +233,7 @@ fi
 dpath=
 # now, check for album directory
 if [ ${compilation} -ne 1 ] ; then
-  albumct=$(find "${MUSIC_ROOT}/${fs_artist}" -type d -maxdepth 1 -iname "*$(articulator "${fs_album}")*"|wc -l)
+  albumct=$(cd "${MUSIC_ROOT}/${fs_artist}" && find . -type d -maxdepth 1 -iname "*$(articulator "${fs_album}")*"|wc -l)
   if [ "${albumct}" -gt 0 ] ; then
     if [ ! -d "${MUSIC_ROOT}/${fs_artist}/${fs_album}" ] ; then
       echo "case mismacth in album name tag: value ${fs_album}" >> ${output_log}
@@ -254,7 +254,7 @@ else
   albumct=$(find "${MUSIC_ROOT}/${COMP_DIR}" -type d -maxdepth 1 -iname "*$(articulator "${fs_album}")*"|wc -l)
   if [ "${albumct}" -gt 0 ] ; then
     if [ ! -d  "${MUSIC_ROOT}/${COMP_DIR}/${fs_album}" ] ; then
-      echo "case mismacth in album name tag: value ${fs_album}" >> ${output_log}
+      echo "case mismatch in album name tag: value ${fs_album}" >> ${output_log}
       mv "${in}" "${MUSIC_STAGE}/${wname}.${rdid}.flac"
       mv "${output_log}" "${MUSIC_STAGE}/${wname}.${rdid}.txt"
       exit 1
