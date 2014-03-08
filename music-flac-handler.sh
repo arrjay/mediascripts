@@ -278,32 +278,25 @@ if [ ${multidisc} -eq 1 ] ; then
 fi
 
 # we actually should know everything there is to know concerning the file destination. see if it exists now.
+existing=$(find "${dpath}" -iname "${fs_tracknumber}*.flac")
+if [ ! -z "${existing}" ] ; then
+  echo "file already exists: ${existing}" >> ${output_log}
+  mv "${in}" "${MUSIC_STAGE}/${wname}.${rdid}.flac"
+  mv "${output_log}" "${MUSIC_STAGE}/${wname}.${rdid}.txt"
+  chmod a+r "${MUSIC_STAGE}/${wname}.${rdid}.txt"
+  exit 1
+fi
+
 if [ ${compilation} -ne 1 ] ; then
-  if [ -f "${dpath}/${fs_tracknumber} - ${fs_title}.flac" ] ; then
-    echo "file already exists: ${dpath}/${fs_tracknumber} - ${fs_title}.flac" >> ${output_log}
-    mv "${in}" "${MUSIC_STAGE}/${wname}.${rdid}.flac"
-    mv "${output_log}" "${MUSIC_STAGE}/${wname}.${rdid}.txt"
-    chmod a+r "${MUSIC_STAGE}/${wname}.${rdid}.txt"
-    exit 1
-  else
-    mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title}.flac"
-    chmod a+r "${dpath}/${fs_tracknumber} - ${fs_title}.flac"
-    dfile="${dpath}/${fs_tracknumber} - ${fs_title}.flac"
-    rm "${output_log}"
-  fi
+  mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title}.flac"
+  chmod a+r "${dpath}/${fs_tracknumber} - ${fs_title}.flac"
+  dfile="${dpath}/${fs_tracknumber} - ${fs_title}.flac"
+  rm "${output_log}"
 else
-  if [ -f "${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac" ] ; then
-    echo "file already exists: ${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac" >> ${output_log}
-    mv "${in}" "${MUSIC_STAGE}/${wname}.${rdid}.flac"
-    mv "${output_log}" "${MUSIC_STAGE}/${wname}.${rdid}.txt"
-    chmod a+r "${MUSIC_STAGE}/${wname}.${rdid}.txt"
-    exit 1
-  else
-    mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac"
-    chmod a+r "${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac"
-    dfile="${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac"
-    rm "${output_log}"
-  fi
+  mv "${in}" "${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac"
+  chmod a+r "${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac"
+  dfile="${dpath}/${fs_tracknumber} - ${fs_title} (${fs_artist}).flac"
+  rm "${output_log}"
 fi
 
 # create an mp3 of the flac input
