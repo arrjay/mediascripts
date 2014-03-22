@@ -23,6 +23,7 @@ case $filetype in
     ;;
   audio/mpeg)
     # this should be mp3
+    ${home}/bin/music-mp3-handler.sh "${home}" "${in}"
     ;;
   *)
     echo "I have no idea what type of file this is."
