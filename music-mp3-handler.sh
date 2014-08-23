@@ -229,7 +229,7 @@ function articulator {
 # okay, now, check in the tree if we've seen this before
 if [ ${compilation} -ne 1 ] ; then
   # the easiest way to do a case insensitive check seems to be find of depth 1 with iname
-  artistct=$(find "${MUSIC_ROOT}" -type d -maxdepth 1 -iname "*$(articulator "${fs_artist}")*"| wc -l)
+  artistct=$(find "${MUSIC_ROOT}" -maxdepth 1 -type d -iname "*$(articulator "${fs_artist}")*"| wc -l)
   if [ "${artistct}" -gt 0 ] ; then
     # see if we differ from a destdir by case (which means it doesn't exist)
     if [ ! -d "${MUSIC_ROOT}/${fs_artist}" ] ; then
@@ -250,7 +250,7 @@ fi
 dpath=
 # now, check for album directory
 if [ ${compilation} -ne 1 ] ; then
-  albumct=$(cd "${MUSIC_ROOT}/${fs_artist}" && find . -type d -maxdepth 1 -iname "*$(articulator "${fs_album}")*"|wc -l)
+  albumct=$(cd "${MUSIC_ROOT}/${fs_artist}" && find . -maxdepth 1 -type d -iname "*$(articulator "${fs_album}")*"|wc -l)
   if [ "${albumct}" -gt 0 ] ; then
     if [ ! -d "${MUSIC_ROOT}/${fs_artist}/${fs_album}" ] ; then
       echo "case mismacth in album name tag: value ${fs_album}" >> ${output_log}
@@ -268,7 +268,7 @@ if [ ${compilation} -ne 1 ] ; then
     dpath="${MUSIC_ROOT}/${fs_artist}/${fs_album}"
   fi
 else
-  albumct=$(find "${MUSIC_ROOT}/${COMP_DIR}" -type d -maxdepth 1 -iname "*$(articulator "${fs_album}")*"|wc -l)
+  albumct=$(find "${MUSIC_ROOT}/${COMP_DIR}" -maxdepth 1 -type d -iname "*$(articulator "${fs_album}")*"|wc -l)
   if [ "${albumct}" -gt 0 ] ; then
     if [ ! -d  "${MUSIC_ROOT}/${COMP_DIR}/${fs_album}" ] ; then
       echo "case mismatch in album name tag: value ${fs_album}" >> ${output_log}
