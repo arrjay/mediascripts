@@ -4,7 +4,7 @@ set -e
 
 home=${1}
 
-cd ${home}
+cd ${home}/run
 
 # source config pieces
 . ${home}/music.conf
