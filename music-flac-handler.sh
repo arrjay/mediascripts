@@ -110,8 +110,12 @@ fi
 # we don't do this with bash RE cheats because it can return single-digit entries.
 disctotal=$(echo ${discnumber} | awk -F'/' '{ print $2 }')
 if [ -z ${disctotal} ] ; then
-  echo "There is no total # of discs recorded" >> ${output_log}
-  tagmiss=$((${tagmiss} +1))
+  # newer versions of easytag actually set disctotal as a proper tag. handle that now by trying to set it again.
+  disctotal=$(metaflac --list "${in}" | awk -F': ' 'BEGIN{OFS="=";x=2} $2 ~ "DISCTOTAL" {e=split($2,s,"="); while(x<=e){print s[x];x++};}')
+  if [ -z ${disctotal} ] ; then
+    echo "There is no total # of discs recorded" >> ${output_log}
+    tagmiss=$((${tagmiss} +1))
+  fi
 else
   # get the actual current disc number and make sure it's sane
   cdisc=$(echo ${discnumber} | awk -F'/' '{ print $1 }')
