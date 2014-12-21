@@ -159,6 +159,7 @@ function fsmangle {
   output=${1//&/n}
   output=${output//!/_}
   output=${output//\?/_}
+  output=${output//\*/_}
   # finish with tr to remove any /'s
   output=$(echo ${output} | tr / _)
   echo ${output}
