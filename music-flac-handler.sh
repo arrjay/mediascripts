@@ -112,6 +112,7 @@ disctotal=$(echo ${discnumber} | awk -F'/' '{ print $2 }')
 if [ -z ${disctotal} ] ; then
   # newer versions of easytag actually set disctotal as a proper tag. handle that now by trying to set it again.
   disctotal=$(metaflac --list "${in}" | awk -F': ' 'BEGIN{OFS="=";x=2} $2 ~ "DISCTOTAL" {e=split($2,s,"="); while(x<=e){print s[x];x++};}')
+  cdisc=${discnumber}
 fi
 
 # check again, and give an error if we're stupid this time
@@ -120,7 +121,10 @@ if [ -z ${disctotal} ] ; then
   tagmiss=$((${tagmiss} +1))
 else
   # get the actual current disc number and make sure it's sane
-  cdisc=$(echo ${discnumber} | awk -F'/' '{ print $1 }')
+  # we might already *have* it tho - see above (disctotal check)
+  if [ -z ${cdisc} ] ; then
+    cdisc=$(echo ${discnumber} | awk -F'/' '{ print $1 }')
+  fi
   if [ "${cdisc}" -gt "${disctotal}" ] ; then
     echo "The current disc number is greater than the disc total" >> ${output_log}
     tagmiss=$((${tagmiss} +1))
@@ -176,11 +180,13 @@ wname=
 if [ ${compilation} -ne 1 ]; then
   wname="${fs_artist} - ${fs_album}"
 else
+  echo "compilation tag is set" >> ${output_log}
   wname="COMPILATION - ${fs_ablum}"
 fi
 
 # multi-disc albums get a disc number now
 if [ ${multidisc} -eq 1 ] ; then
+  echo "multi-disc set detected" >> ${output_log}
   wname="${wname} (Disc {$fs_cdisc}) - "
 else
   wname="${wname} - "
@@ -193,6 +199,15 @@ wname="${wname} ${fs_tracknumber} - ${fs_title}"
 if [ ${compilation} -eq 1 ]; then
   wname="${wname} (${fs_artist})"
 fi
+
+# log all the tags
+echo "working name is ${wname}" >> ${output_log}
+echo "artist is ${artist}, fs_artist is ${fs_artist}" >> ${output_log}
+echo "album is ${album}, fs_album is ${fs_album}" >> ${output_log}
+echo "title is ${title}, fs_title is ${fs_title}" >> ${output_log}
+echo "tracknumber is ${tracknumber}, fs_tracknumber is ${fs_tracknumber}" >> ${output_log}
+echo "cdisc is ${cdisc}, fs_cdisc is ${fs_cdisc}" >> ${output_log}
+echo "disctotal is ${disctotal}" >> ${output_log}
 
 # if we have any tag errors at this point, move the file to a rejection point, save the log, and stop.
 if [ $tagmiss -ne 0 ] ; then
