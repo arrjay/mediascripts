@@ -86,7 +86,7 @@ esac
 # now a directory!
 picturedir=$(mktemp -d /tmp/picture.XXXXXX)
 
-eyeD3 -i ${picturedir} "${in}"
+eyeD3 --write-images ${picturedir}/ "${in}"
 
 if [ $picturect -gt 1 ]; then
   picturefile=$(find ${picturedir} -type f -name FRONT_COVER*)
