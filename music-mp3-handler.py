@@ -3,6 +3,7 @@
 import eyed3		# mp3 tag handler
 import optparse		# options/argument processing
 import ConfigParser	# config file processing
+import shlex
 
 parser = optparse.OptionParser()
 parser.add_option("-C","--configdir",
@@ -47,8 +48,30 @@ class FakeSecHead(object):
 # go get the config
 cp = ConfigParser.ConfigParser()
 cp.readfp(FakeSecHead(open(options.configdir+'/music.conf')))
-print cp.items('config')
+
+# helper
+def GetConfigOpt(opt):
+  options = cp.options('config')
+  try:
+    # shlex comes to the party because we need to unquote the config strings
+    res = shlex.split(cp.get('config',opt))[0]
+  except:
+    return None
+  return res
+
+# fill in options from config
+music_root = GetConfigOpt('music_root')
+music_compdir = GetConfigOpt('comp_dir')
 
 # command line options can override config file options.
-# mix it all together now.
+# pull those in now.
+if options.rootdir:
+  music_root = options.rootdir
 
+if options.compsubdir:
+  music_compdir = options.compsubdir
+
+# okay, now...are there any args?
+if len(args) == 0:
+  print "you must provide a file to operate on."
+  raise IndexError
