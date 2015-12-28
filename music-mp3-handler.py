@@ -8,6 +8,8 @@ import tempfile		# temporary file handling
 import os
 import subprocess	# external process handling
 import shutil		# file manipulation
+import re		# regex manipulation for filesystem max fun
+import sys		# sys.exit
 
 #import eyed3.utils.art as track_art
 
@@ -85,6 +87,13 @@ if options.workdir:
 
 # open the null device
 NUL = open(os.devnull, 'w')
+
+# helper function for fs-sanitization
+def fsmangle(string):
+  res = string
+  res = re.sub(r'([?]|[!]|[*]|[/])','_',res)
+  res = re.sub(r'[&]','n',res)
+  return res
 
 # okay, now...are there any args?
 if len(args) == 0:
@@ -229,26 +238,47 @@ for testfile in args:
     tfill = 2
 
   # work out file name templates
+  fs_album = fsmangle(ALBUM)
+  fs_artist = fsmangle(ARTIST)
+  fs_title = fsmangle(TITLE)
   
   if compilation:
-    fn = 'COMPILATION - ' + ALBUM
+    fn = 'COMPILATION - '
   else:
-    fn = ARTIST + ' - ' + ALBUM
+    fn = fs_artist + ' - '
+
+  fn = fn + fs_album
 
   if multidisc:
     fn = fn + ' (Disc ' + str(currdisc) + ')'
 
-  fn = fn + ' - ' + str(TRACKNUMBER).zfill(tfill) + ' - ' + TITLE
+  fn = fn + ' - ' + str(TRACKNUMBER).zfill(tfill) + ' - ' + fs_title
 
   if compilation:
-    fn = fn + ' (' + ARTIST + ')'
+    fn = fn + ' (' + fs_artist + ')'
 
-  # okay, at this point, is the tag complete?
+  # second series move, now that we have reasonable file name candidates.
+  newfile2 = workingdir + '/' + fn + '.' + rdid
+  os.rename(output_log.name + '.txt', newfile2 + '.txt')
+
+  # okay, at this point, is the tag complete? if not, stop.
   if tagmiss != 0:
-    print fn
-  else:
-    print fn
+    os.rename(newfile,newfile2 + '.mp3')
+    sys.exit()
 
-  # clear the PRIV tag
+  # clear the PRIV tag - http://alotofbytes.blogspot.com/2013/05/google-music-mp3s-and-hidden-id3-tag.html
+  if mp3file.tag.frame_set['PRIV']:
+    del mp3file.tag.frame_set['PRIV']
 
-  print str(compilation) + ' ' + TITLE + ' ' + ARTIST + ' ' + ALBUM + ' ' + str(DATE) + ' ' + DISCNUMBER + ' ' + str(TRACKNUMBER) + ' ' + str(TRACKTOTAL) + ' ' + GROUPING
+  # write comments for all the images to fix itunes attempting to decode them
+  # https://bitbucket.org/nicfit/eyed3/issues/27/images-added-by-eyed3-are-not-shown
+  for image in mp3file.tag.images:
+    if not image.description:
+      image.description = u' '
+
+  # save as ID3v2.3
+  mp3file.tag.version = (2, 3, 0)
+  mp3file.tag.save()
+
+  # move to stage dir, let's find a permanent home.
+  os.rename(newfile,newfile2 + '.mp3')
