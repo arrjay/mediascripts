@@ -95,12 +95,21 @@ def fsmangle(string):
   res = re.sub(r'[&]','n',res)
   return res
 
+# helper function for a/an/the
+def articulator(string):
+  res = string
+  res = re.sub(r'^(A|An|The) ','',res)
+  return res
+
 # okay, now...are there any args?
 if len(args) == 0:
   print "you must provide a file to operate on."
   raise IndexError
 
 for testfile in args:
+  # reset umask in case this was looped from a previous file
+  os.umask(0077)
+
   # create a temp file in the workdir as a base for file renames.
   output_log = tempfile.NamedTemporaryFile(dir=workingdir,prefix='',delete=False)
 
@@ -282,3 +291,40 @@ for testfile in args:
 
   # move to stage dir, let's find a permanent home.
   os.rename(newfile,newfile2 + '.mp3')
+
+  # create the compilations dir, as this will also handle the case
+  # where we need to create the root dir.
+  # reset the umask here as well, since makedirs' mode arg is ignored.
+  os.umask(022)
+  try:
+    os.makedirs(music_root + '/' + music_compdir)
+  except OSError, e:
+    if e.errno != 17:
+      raise
+    pass
+
+  # if this is not a compilation, we need to make an artist directory.
+  if not compilation:
+    pivot = os.listdir(music_root)
+    d = music_root
+  else:
+    pivot = os.listdir(music_root + '/' + music_compdir)
+    d = music_root + '/' + music_compdir
+
+  # lowercase that directory listing
+  lc_pivot = [f.lower() for f in pivot]
+
+  # check if (lc'd, articulated) string is in the listing
+  if not articulator(fs_artist).lower() in lc_pivot:
+    # make the directory with the uppercased version
+    os.makedirs(music_root + '/' + fs_artist)
+  else:
+    # check if the uppercased, non-articulated version matches
+    if not fs_artist in pivot:
+      # explode
+      output_log.write('case/article mismatch in tag value: ')
+      output_log.write(ARTIST)
+      output_log.write('\n')
+      sys.exit()
+
+  print pivot
