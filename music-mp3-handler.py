@@ -101,6 +101,29 @@ def articulator(string):
   res = re.sub(r'^(A|An|The) ','',res)
   return res
 
+# check if there is a directory in the filesystem matching
+def fsck(directory, nid):
+  res = ''
+  # get directory, lowercase directory
+  dirtable = os.listdir(directory)
+  lc_table = [f.lower() for f in dirtable]
+
+  # check if string is in listing
+  if not any(articulator(nid).lower() in s for s in lc_table):
+    # make the directory
+    os.makedirs(directory + '/' + nid)
+    return d
+  else:
+    # check if the uppercased, non-articulated version matches
+    if not nid in dirtable:
+      # explode
+      output_log.write('case/article mismatch in tag value: ')
+      output_log.write(nid)
+      output_log.write('\n')
+      return None
+    else:
+      return directory + '/' + nid
+
 # okay, now...are there any args?
 if len(args) == 0:
   print "you must provide a file to operate on."
@@ -269,6 +292,7 @@ for testfile in args:
   # second series move, now that we have reasonable file name candidates.
   newfile2 = workingdir + '/' + fn + '.' + rdid
   os.rename(output_log.name + '.txt', newfile2 + '.txt')
+  fn = None
 
   # okay, at this point, is the tag complete? if not, stop.
   if tagmiss != 0:
@@ -304,27 +328,31 @@ for testfile in args:
     pass
 
   # if this is not a compilation, we need to make an artist directory.
-  if not compilation:
-    pivot = os.listdir(music_root)
-    d = music_root
+  if compilation:
+    d = fsck(music_root,music_compdir)
   else:
-    pivot = os.listdir(music_root + '/' + music_compdir)
-    d = music_root + '/' + music_compdir
+    d = fsck(music_root,fs_artist)
 
-  # lowercase that directory listing
-  lc_pivot = [f.lower() for f in pivot]
+  # album directory
+  if d:
+    d = fsck(d,fs_album)
 
-  # check if (lc'd, articulated) string is in the listing
-  if not articulator(fs_artist).lower() in lc_pivot:
-    # make the directory with the uppercased version
-    os.makedirs(music_root + '/' + fs_artist)
-  else:
-    # check if the uppercased, non-articulated version matches
-    if not fs_artist in pivot:
-      # explode
-      output_log.write('case/article mismatch in tag value: ')
-      output_log.write(ARTIST)
-      output_log.write('\n')
-      sys.exit()
+  # disc directory
+  if d and multidisc:
+    d = fsck(d,'Disc ' + str(currdisc).zfill(dfill))
 
-  print pivot
+  # see if track exists already first
+  if d:
+    dirtable = os.listdir(d)
+    # check if track number is in listing
+    if not any(item.startswith(str(TRACKNUMBER).zfill(tfill)) for item in dirtable):
+      if compilation:
+        fn = str(TRACKNUMBER).zfill(tfill) + ' - ' + fs_title + ' (' + fs_artist + ').mp3'
+      else:
+        fn = str(TRACKNUMBER).zfill(tfill) + ' - ' + fs_title + '.mp3'
+    else:
+      output_log.write('this track ID already exists.\n')
+
+  # finally, move the track.
+  if fn:
+    shutil.move(newfile2 + '.mp3',d + '/' + fn)
