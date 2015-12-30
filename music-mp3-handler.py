@@ -303,6 +303,10 @@ for testfile in args:
   if mp3file.tag.frame_set['PRIV']:
     del mp3file.tag.frame_set['PRIV']
 
+  # clear the not-well-supported RGAD tag if encounterd, because eyeD3 hates it.
+  if mp3file.tag.frame_set['RGAD']:
+    del mp3file.tag.frame_set['RGAD']
+
   # write comments for all the images to fix itunes attempting to decode them
   # https://bitbucket.org/nicfit/eyed3/issues/27/images-added-by-eyed3-are-not-shown
   for image in mp3file.tag.images:
