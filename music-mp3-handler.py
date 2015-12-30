@@ -112,7 +112,7 @@ def fsck(directory, nid):
   if not any(articulator(nid).lower() in s for s in lc_table):
     # make the directory
     os.makedirs(directory + '/' + nid)
-    return d
+    return directory + '/' + nid
   else:
     # check if the uppercased, non-articulated version matches
     if not nid in dirtable:
