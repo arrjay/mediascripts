@@ -23,12 +23,18 @@ parser.add_option("-M","--compsubdir",
                   help="compilation sub FOLDER", metavar="FOLDER")
 parser.add_option("-W","--workdir",
                   help="working FOLDER", metavar="FOLDER")
+parser.add_option("-v","--verbose",
+                  help="increase verbosity", default=False, action="store_true")
 
 (options, args) = parser.parse_args()
 
 # check if configdir is defined, else use a default defined here.
 if not options.configdir:
   options.configdir='/etc/media-scripts'
+
+if not options.verbose:
+  # shut up eyed3
+  eyed3.log.setLevel("ERROR")
 
 # fake out configparser, we...actually feed it a shell script.
 # http://stackoverflow.com/a/2819788
@@ -305,6 +311,7 @@ for testfile in args:
 
   # clear the not-well-supported RGAD tag if encounterd, because eyeD3 hates it.
   if mp3file.tag.frame_set['RGAD']:
+    output_log.write('removed RGAD tag from file\n')
     del mp3file.tag.frame_set['RGAD']
 
   # write comments for all the images to fix itunes attempting to decode them
@@ -360,3 +367,7 @@ for testfile in args:
   # finally, move the track.
   if fn:
     shutil.move(newfile2 + '.mp3',d + '/' + fn)
+
+  # delete our logfile if empty
+  if os.path.getsize(newfile2 + '.txt') == 0:
+    os.remove(newfile2 + '.txt')
