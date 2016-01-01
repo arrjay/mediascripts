@@ -364,9 +364,10 @@ for testfile in args:
     else:
       output_log.write('this track ID already exists.\n')
 
-  # finally, move the track.
+  # finally, move the track. reset permissions.
   if fn:
     shutil.move(newfile2 + '.mp3',d + '/' + fn)
+    os.chmod(d + '/' + fn, 0644)
 
   # delete our logfile if empty
   if os.path.getsize(newfile2 + '.txt') == 0:
