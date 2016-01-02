@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# encoding=utf8
 
 import eyed3		# mp3 tag handler
 import optparse		# options/argument processing
@@ -10,6 +11,9 @@ import subprocess	# external process handling
 import shutil		# file manipulation
 import re		# regex manipulation for filesystem max fun
 import sys		# sys.exit
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 #import eyed3.utils.art as track_art
 
